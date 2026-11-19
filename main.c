@@ -1,18 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "lexer.h"
+#include "ast_simple.h"
 
 int main() {
-    char* input = "let five = 5;";
-    Lexer* l = New(input);
+    printf("\n--- Running: main  ---\n");
+    char* input = "5 + 10";
+    Node* n5 = create_int_node(5);
+    Node* n10 = create_int_node(10);
+    Node* nPlus = create_binop_node('+',n5,n10);
     
-    Token tok;
-    do {
-        tok = NextToken(l);
-        printf("Type: %d, Literal: '%s'\n", tok.type, tok.literal);
-        FreeToken(&tok); // Не забываем освобождать память!
-    } while (tok.type != TOK_EOF);
+    printf("\n--- Printing: Node  ---\n");
+    print_node(nPlus);    
     
-    free(l); // Освобождаем сам лексер
+    printf("\n--- free: nPlus  ---\n");
+    free_node(nPlus); 
     return 0;
 }

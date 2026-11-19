@@ -32,4 +32,7 @@ Node* create_binop_node(char op, Node* left, Node* right);
 // Функция освобождения памяти (важно!)
 void free_node(Node* node);
 
+// Функция для вывода на экран дерева
+void print_node(Node* node);
+
 #endif

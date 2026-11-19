@@ -1,4 +1,5 @@
 #include "ast_simple.h"
+#include <stdio.h>
 #include <stdlib.h> // Для malloc и free
 
 Node* create_int_node(long value) {
@@ -38,4 +39,35 @@ void free_node(Node* node) {
     
     // Освобождаем саму структуру
     free(node);
+}
+const char* node_type_to_string(NodeType type) {
+    switch(type) {
+        case NODE_INT: return "INT";
+        case NODE_BINOP: return "BINOP";
+        default: return "UNKNOWN";
+    }
+}
+
+void print_node(Node* node) {
+    if (!node) return;
+
+    if (node->type == NODE_BINOP) {
+        // Выводим сам узел операции
+        printf("[Node: %s] Operator: '%c'\n", 
+               node_type_to_string(node->type), 
+               node->op);
+        
+        // Рекурсивно идем влево и вправо
+        // Добавляем отступы, чтобы видеть структуру дерева визуально
+        printf("  Left:\n");
+        print_node(node->left);
+        printf("  Right:\n");
+        print_node(node->right);
+        
+    } else if (node->type == NODE_INT) {
+        // Выводим значение числа
+        printf("[Node: %s] Value: %ld\n", 
+               node_type_to_string(node->type), 
+               node->int_value);
+    }
 }
