@@ -1,66 +1,51 @@
 #include "evaluator.h"
 #include <stdio.h>
 
-Object* Eval(Node* node) {
+Object* Eval(Node* node, Arena* arena) {
     if (!node) return NULL;
 
     switch (node->type) {
         case NODE_INT:
-            // Если это число, просто создаем объект Integer
-            return NewInteger(node->int_value);
+            // Вместо NewInteger(value), который делал malloc,
+            // мы теперь создаем объект напрямую из арены
+            Object* intObj = (Object*)ArenaAlloc(arena, sizeof(Object));
+            intObj->type = OBJ_INT;
+            intObj->value.intValue = node->int_value;
+            return intObj;
         
         case NODE_BINOP:
-            // Если это операция, сначала вычисляем левую и правую части
-            Object* leftObj = Eval(node->left);
-            Object* rightObj = Eval(node->right);
+            // Рекурсивно вычисляем левую и правую части, передавая арену
+            Object* leftObj = Eval(node->left, arena);
+            Object* rightObj = Eval(node->right, arena);
             
             if (!leftObj || !rightObj) return NULL;
             
-            // Проверяем, что оба операнда - числа
+            // Проверяем типы (как раньше)
             if (leftObj->type != OBJ_INT || rightObj->type != OBJ_INT) {
-                printf("Error: Type mismatch in binary operation\n");
-                FreeObject(leftObj);
-                FreeObject(rightObj);
+                printf("Error: Type mismatch\n");
                 return NULL;
             }
             
-            // Выполняем операцию
+            // Вычисляем результат
             long result = 0;
             switch (node->op) {
-                case '+':
-                    result = leftObj->value.intValue + rightObj->value.intValue;
+                case '+': result = leftObj->value.intValue + rightObj->value.intValue; break;
+                case '-': result = leftObj->value.intValue - rightObj->value.intValue; break;
+                case '*': result = leftObj->value.intValue * rightObj->value.intValue; break;
+                case '/': 
+                    if (rightObj->value.intValue == 0) return NULL;
+                    result = leftObj->value.intValue / rightObj->value.intValue; 
                     break;
-                case '-':
-                    result = leftObj->value.intValue - rightObj->value.intValue;
-                    break;
-                case '*':
-                    result = leftObj->value.intValue * rightObj->value.intValue;
-                    break;
-                case '/':
-                    if (rightObj->value.intValue == 0) {
-                        printf("Error: Division by zero\n");
-                        FreeObject(leftObj);
-                        FreeObject(rightObj);
-                        return NULL;
-                    }
-                    result = leftObj->value.intValue / rightObj->value.intValue;
-                    break;
-                default:
-                    printf("Error: Unknown operator '%c'\n", node->op);
-                    FreeObject(leftObj);
-                    FreeObject(rightObj);
-                    return NULL;
+                default: return NULL;
             }
             
-            // Освобождаем промежуточные объекты
-            FreeObject(leftObj);
-            FreeObject(rightObj);
-            
-            // Возвращаем новый объект с результатом
-            return NewInteger(result);
+            // Создаем новый объект результата из арены
+            Object* resObj = (Object*)ArenaAlloc(arena, sizeof(Object));
+            resObj->type = OBJ_INT;
+            resObj->value.intValue = result;
+            return resObj;
             
         default:
-            printf("Error: Cannot evaluate node type %d\n", node->type);
             return NULL;
     }
 }

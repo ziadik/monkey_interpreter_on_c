@@ -1,5 +1,6 @@
 # Writing|VibeCoding interpreter in C
 
-# Evaluator Simple
+# Arena Alloc
 
-### gcc main_eval_test.c evaluator.c object.c parser.c lexer.c token.c ast_simple.c -o monkey_eval
+
+### Arena Allocator (аллокатор-арена) — это паттерн управления памятью, который очень популярен в системном программировании (C/C++)
