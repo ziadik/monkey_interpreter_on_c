@@ -3,9 +3,10 @@
 
 #include "ast_simple.h"
 #include "object.h"
-#include "arena.h" // Подключаем арену
+#include "arena.h" 
+#include "environment.h"
 
 // Теперь Eval принимает арену
-Object* Eval(Node* node, Arena* arena);
+Object* Eval(Node* node, Environment* env, Arena* arena);
 
 #endif

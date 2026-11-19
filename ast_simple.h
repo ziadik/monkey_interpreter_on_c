@@ -5,22 +5,18 @@
 
 // Типы узлов для начала
 typedef enum {
-    NODE_INT,   // Целое число
-    NODE_BINOP  // Бинарная операция (например, сложение)
+    NODE_INT,
+    NODE_BINOP,
+    NODE_IDENTIFIER 
 } NodeType;
 
-// Структура узла дерева
 typedef struct Node {
     NodeType type;
-    
-    // Поля для NODE_INT
     long int_value; 
-    
-    // Поля для NODE_BINOP
-    struct Node* left;  // Левый операнд
-    struct Node* right; // Правый операнд
-    char op;            // Оператор ('+', '-', '*', '/')
-    
+    struct Node* left;  
+    struct Node* right; 
+    char op;            
+    char* identifier_name; 
 } Node;
 
 // Функция создания узла-числа
@@ -28,6 +24,8 @@ Node* create_int_node(long value);
 
 // Функция создания узла-операции
 Node* create_binop_node(char op, Node* left, Node* right);
+
+Node* create_identifier_node(const char* name);
 
 // Функция освобождения памяти (важно!)
 void free_node(Node* node);
