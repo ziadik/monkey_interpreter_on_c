@@ -1,6 +1,7 @@
 #include "ast_simple.h"
 #include <stdio.h>
-#include <stdlib.h> // Для malloc и free
+#include <stdlib.h> 
+#include <string.h>
 
 Node* create_int_node(long value) {
     Node* n = (Node*)malloc(sizeof(Node));
@@ -24,6 +25,22 @@ Node* create_binop_node(char op, Node* left, Node* right) {
     n->left = left;
     n->right = right;
     n->int_value = 0; // Не используется для операций
+    
+    return n;
+}
+
+Node* create_identifier_node(const char* name) {
+    Node* n = (Node*)malloc(sizeof(Node)); // AST пока на malloc, объекты значений на арене
+    if (!n) return NULL;
+    
+    n->type = NODE_IDENTIFIER;
+    n->identifier_name = strdup(name); // Или можно тоже в арену, если хочешь всё туда
+    
+    // Инициализация остальных полей
+    n->int_value = 0;
+    n->left = NULL;
+    n->right = NULL;
+    n->op = 0;
     
     return n;
 }
